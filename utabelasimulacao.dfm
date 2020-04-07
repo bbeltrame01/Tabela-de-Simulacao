@@ -73,8 +73,9 @@ object ftabelasimulacao: Tftabelasimulacao
       Anchors = [akLeft, akTop, akRight, akBottom]
       Columns = <>
       RowSelect = True
+      SortType = stText
       TabOrder = 2
-      ViewStyle = vsList
+      ViewStyle = vsSmallIcon
     end
   end
   object gpb_ts: TGroupBox
@@ -122,8 +123,9 @@ object ftabelasimulacao: Tftabelasimulacao
       Anchors = [akLeft, akTop, akRight, akBottom]
       Columns = <>
       RowSelect = True
+      SortType = stText
       TabOrder = 2
-      ViewStyle = vsList
+      ViewStyle = vsSmallIcon
     end
   end
   object edt_tempo: TEdit

@@ -109,13 +109,14 @@ end;
 
 procedure Tftabelasimulacao.btn_simularClick(Sender: TObject);
 var
-  i,j,iRelogio,iTFSAnt,
+  i,j,iRelogio,iTFSAnt,iCliente,
   iTCS,iTLO,iTIS,iFila,iTFS,
   iTotTS,iTotFila,iTotTCS,iTotTLO: integer;
   dTMEF,dPOL,dTMS,dTMDS: double;
 
   procedure ZerarTotais;
   begin
+    iCliente:=1;
     iRelogio:=0;
     iTFSAnt :=0;
     iTotTS  :=0;
@@ -124,7 +125,7 @@ var
     iTotTLO :=0;
   end;
 
-  procedure MontarTabela(iCliente,iTEC,iTS:integer);
+  procedure MontarTabela(iTEC,iTS:integer);
   begin
     with stg_simulacao do
     begin
@@ -145,25 +146,31 @@ var
     iTotFila:=iTotFila+iFila;
     iTotTCS :=iTotTCS+iTCS;
     iTotTLO :=iTotTLO+iTLO;
+    Inc(iCliente);
   end;
 begin
   // Zerar Variaveis
   ZerarTotais;
   LimparGrid;
-  for i:=0 to slTEC.Count-1 do
+
+  while True do
   begin
+    // Sortear Valor Inicial
+    i:=random(slTEC.Count);
+    j:=random(slTS.Count);
     // CALCULO
     iRelogio := iRelogio+StrToInt(slTEC[i]);  // Tempo de Chegada no Relógio da Simulação
+    if iRelogio>StrToIntDef(edt_tempo.Text,0) then Break;
     if iTFSAnt>=iRelogio then
       iFila := iTFSAnt - iRelogio             // Tempo do Cliente na Fila
     else iFila := 0;
     iTIS := iRelogio + iFila;                 // Tempo do Início de Serviço
-    iTFS := StrToIntDef(slTS[i],0) + iTIS;    // Tempo Final de Serviço
-    iTCS := StrToIntDef(slTS[i],0) + iFila;   // Tempo do Cliente no Sistema
+    iTFS := StrToIntDef(slTS[j],0) + iTIS;    // Tempo Final de Serviço
+    iTCS := StrToIntDef(slTS[j],0) + iFila;   // Tempo do Cliente no Sistema
     if iTFSAnt<iRelogio then
       iTLO := iRelogio - iTFSAnt              // Tempo Livre do Operador
     else iTLO := 0;
-    MontarTabela(i+1,StrToInt(slTEC[i]),StrToIntDef(slTS[i],0));
+    MontarTabela(StrToIntDef(slTEC[i],0),StrToIntDef(slTS[j],0));
   end;
   if slTEC.Count>0 then
   begin
@@ -171,6 +178,7 @@ begin
     dPOL :=iTotTLO/iTFS;
     dTMS :=iTotTS/slTEC.Count;
     dTMDS:=iTotTCS/slTEC.Count;
+    stg_simulacao.RowCount:=iCliente;
     MessageDlg('Tempo Médio de Espera na Fila: '+FormatFloat('#,##0.00',dTMEF)+' min'+#13+
                'Probabilidade de um cliente esperar na fila: '+FormatFloat('#,##0.00',dTMEF)+' %'+#13+
                'Probabilidade do Operador Livre: '+FormatFloat('#,##0.00',dPOL) +' %'+#13+
@@ -199,7 +207,7 @@ var
   Num_Linhas, Num_Colunas: integer;
   sTexto: string;
 begin
-  Num_Linhas  := 101;
+  Num_Linhas  := 2;
   Num_Colunas := 9;
 
   with stg_simulacao do
